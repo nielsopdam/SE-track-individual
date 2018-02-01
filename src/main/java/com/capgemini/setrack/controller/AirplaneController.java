@@ -3,9 +3,7 @@ package com.capgemini.setrack.controller;
 import com.capgemini.setrack.model.Airplane;
 import com.capgemini.setrack.repository.AirplaneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/airplanes")
@@ -17,5 +15,22 @@ public class AirplaneController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Iterable<Airplane> getAllPlanes() {
         return this.airplaneRepository.findAll();
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public Airplane addAirplane(@RequestBody Airplane airplane){
+        this.airplaneRepository.save(airplane);
+        return airplane;
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public Airplane updateAirplane(@RequestBody Airplane airplane) {
+        this.airplaneRepository.save(airplane);
+        return airplane;
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public void deleteAirplane(@PathVariable long id) {
+        this.airplaneRepository.delete(id);
     }
 }
