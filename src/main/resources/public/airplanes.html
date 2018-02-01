@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airport - Flights</title>
+    <title>Airplanes</title>
 
     <!-- JQuery -->
     <script
@@ -44,7 +44,7 @@
     <script src="/js/helpers/jquery.countdown.min.js"></script>
 
     <script src="/js/main.js"></script>
-    <script src="/js/flights.js"></script>
+    <script src="/js/airplanes.js"></script>
 
     <script type="text/javascript" src="/js/transition.js"></script>
     <script type="text/javascript" src="/js/collapse.js"></script>
@@ -55,7 +55,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-10">
-    <a class="navbar-brand" href="#">Flights</a>
+    <a class="navbar-brand" href="#">Airplanes</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -71,6 +71,9 @@
                 </a>
                 <ul id="nav-airports" class="dropdown-menu">
                 </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/airplanes.html">Airplanes</a>
             </li>
         </ul>
     </div>
@@ -89,70 +92,50 @@
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="switchFlightType()" id="typeFlightButton"></button>
-            <table class="table table-bordered" id="flightsTable">
+            <table class="table table-bordered" id="airplanesTable">
                 <thead>
                 <tr>
                     <th>Flight Number</th>
-                    <th>Airplane</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Take Off</th>
-                    <th>Landing Time</th>
-                    <th>Time Left</th>
+                    <th>Fuel Capacity</th>
+                    <th>Fuel Left</th>
+                    <th>Location</th>
                 </tr>
                 </thead>
             </table>
         </div>
     </div>
 </div>
-<div class="modal fade" id="flightModal" role="dialog">
+<div class="modal fade" id="airplaneModal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add a flight</h5>
+                <h5 class="modal-title">Add an airplane</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="flightForm">
+                <form id="airplaneForm">
                     <div class="form-group">
-                        <label for="flightNr">Flight Number</label>
-                        <input id="flightNr" class="form-control" name="flightNr" type="text" required>
+                        <label for="airplaneNr">Airplane Number</label>
+                        <input id="airplaneNr" class="form-control" name="airplaneNr" type="text" required>
+                    </div>
+                    <div>
+                        <label for="fuelCapacity">Fuel Capacity</label>
+                        <input id="fuelCapacity" class="form-control" name="fuelCapacity" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label for="airplaneNr">Airplane</label>
-                        <select class="form-control" id="airplaneNr" name="airplaneNr" required></select>
+                        <label for="location">Location</label>
+                        <select class="form-control" id="location" name="location" required>
+                            <option value="0">In the air</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="toAirport">To</label>
-                        <select class="form-control" id="toAirport" name="toAirport" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="takeOff">Take Off</label>
-                        <div class='input-group date' id='takeOff'>
-                            <input type='text' class="form-control" />
-                            <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="landingTime">Landing Time</label>
-                        <div class='input-group date' id='landingTime'>
-                            <input type='text' class="form-control" />
-                            <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                        </div>
-                    </div>
-                    <input type="submit" id="flightSubmit" style="display: none;">
+                    <input type="submit" id="airplaneSubmit" style="display: none;">
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="$('#flightSubmit').click();">Submit</button>
+                <button type="button" class="btn btn-primary" onclick="$('#airplaneSubmit').click();">Submit</button>
             </div>
         </div>
     </div>
