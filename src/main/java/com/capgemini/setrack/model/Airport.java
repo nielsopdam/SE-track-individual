@@ -26,12 +26,17 @@ public class Airport {
     @Min(value=1, message="The budget has to be at least 1 euro!")
     private int budget;
 
+    @NotNull(message="An airport should have at least one runway!")
+    @Min(value=1, message="An airport should have at least runway!")
+    private int numberRunways;
+
     public Airport(){}
 
-    public Airport(String country, String city, int budget) {
+    public Airport(String country, String city, int budget, int numberRunways) {
         this.country = country;
         this.city = city;
         this.budget = budget;
+        this.numberRunways = numberRunways;
     }
 
     public String getCountry() {
@@ -56,5 +61,21 @@ public class Airport {
 
     public void setBudget(int budget) {
         this.budget = budget;
+    }
+
+    public int getNumberRunways() {
+        return numberRunways;
+    }
+
+    public void setNumberRunways(int numberRunways) {
+        this.numberRunways = numberRunways;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

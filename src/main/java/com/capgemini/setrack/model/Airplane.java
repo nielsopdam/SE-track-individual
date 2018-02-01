@@ -7,16 +7,16 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table( name="Airplane", uniqueConstraints= {
-        @UniqueConstraint(name = "UK_AIRPLANE_FLIGHTNUMBER", columnNames = {"flightNumber"})
+        @UniqueConstraint(name = "UK_AIRPLANE_FLIGHTNUMBER", columnNames = {"airplaneNumber"})
 })
 public class Airplane {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NotNull(message="A flight number is required!")
-    @Size(min=2, max=20, message="A flight number must be between 2 and 20 characters long!")
-    private String flightNumber;
+    @NotNull(message="An airplane number is required!")
+    @Size(min=2, max=20, message="An airplane number number must be between 2 and 20 characters long!")
+    private String airplaneNumber;
 
     @NotNull(message="A fuel capacity is required!")
     @Min(value=10, message="The fuel capacity should be at least 10!")
@@ -26,24 +26,36 @@ public class Airplane {
     @Min(value=0, message="The fuel capacity can't be negative!")
     private int fuelLeft;
 
+    @ManyToOne
+    @JoinColumn(name="location_id", foreignKey=@ForeignKey(name = "FK_AIRPLANE_AIRPORT"))
+    private Airport location;
+
     public Airplane(){}
 
-    public Airplane(String flightNumber, int fuelCapacity) {
-        this.flightNumber = flightNumber;
+    public Airplane(String airplaneNumber, int fuelCapacity, Airport location) {
+        this.airplaneNumber = airplaneNumber;
         this.fuelCapacity = fuelCapacity;
+        this.location = location;
     }
 
-    public Airplane(String flightNumber){
-        this.flightNumber = flightNumber;
+    public Airplane(String airplaneNumber, int fuelCapacity) {
+        this.airplaneNumber = airplaneNumber;
+        this.fuelCapacity = fuelCapacity;
+        this.location = null;
+    }
+
+    public Airplane(String airplaneNumber){
+        this.airplaneNumber = airplaneNumber;
         this.fuelCapacity = 5000;
+        this.location = null;
     }
 
-    public String getFlightNumber() {
-        return flightNumber;
+    public String getAirplaneNumber() {
+        return airplaneNumber;
     }
 
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
+    public void setAirplaneNumber(String airplaneNumber) {
+        this.airplaneNumber = airplaneNumber;
     }
 
     public int getFuelCapacity() {
@@ -60,5 +72,21 @@ public class Airplane {
 
     public void setFuelLeft(int fuelLeft) {
         this.fuelLeft = fuelLeft;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Airport getLocation() {
+        return location;
+    }
+
+    public void setLocation(Airport location) {
+        this.location = location;
     }
 }
