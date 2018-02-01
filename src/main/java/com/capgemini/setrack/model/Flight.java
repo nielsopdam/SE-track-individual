@@ -7,19 +7,25 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table( name="Flight", uniqueConstraints= {
-        @UniqueConstraint(name = "UK_AIRPORT_COUNTRY_CITY", columnNames = {"country", "city"})
+        @UniqueConstraint(name = "UK_FLIGHT_LIFTOFF", columnNames = {"airplane_id", "origin_id", "liftOffTime"})
 })
 public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @ManyToOne
+    @JoinColumn(name="airplane_id", foreignKey=@ForeignKey(name = "FK_FLIGHT_AIRPLANE"))
     @NotNull(message="A flight has to be made by a plane!")
     private Airplane airplane;
 
+    @ManyToOne
+    @JoinColumn(name="origin_id", foreignKey=@ForeignKey(name = "FK_FLIGHT_STARTING_AIRPORT"))
     @NotNull(message="A flight has to start somewhere!")
     private Airport origin;
 
+    @ManyToOne
+    @JoinColumn(name="destination_id", foreignKey=@ForeignKey(name = "FK_FLIGHT_DESTINATION_AIRPORT"))
     @NotNull(message="A flight has to go somewhere!")
     private Airport destination;
 
