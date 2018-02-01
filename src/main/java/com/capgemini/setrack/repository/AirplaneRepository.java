@@ -1,4 +1,7 @@
 package com.capgemini.setrack.repository;
 
-public class AirplaneRepository {
+import com.capgemini.setrack.model.Airplane;
+import org.springframework.data.repository.CrudRepository;
+
+public interface AirplaneRepository extends CrudRepository<Airplane, Long> {
 }
