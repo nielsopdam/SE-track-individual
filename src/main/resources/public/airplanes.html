@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport - Flights</title>
+
+    <!-- JQuery -->
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="/css/bootstrap-sketchy.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+    <!-- Toastr -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/cb275ec490.js"></script>
+
+    <!-- Bootbox -->
+    <script src="/js/libraries/bootbox.min.js"></script>
+
+    <!-- Toastr Config -->
+    <script src="/js/toastr.js"></script>
+    <script src="/js/libraries/underscore-min.js"></script>
+
+    <!-- Helpers -->
+    <script src="/js/helpers/ajax.js"></script>
+    <script src="/js/helpers/bootbox.js"></script>
+    <script src="/js/helpers/dataTables.js"></script>
+
+    <script src="/js/helpers/jquery.countdown.js"></script>
+    <script src="/js/helpers/jquery.countdown.min.js"></script>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/flights.js"></script>
+
+    <script type="text/javascript" src="/js/transition.js"></script>
+    <script type="text/javascript" src="/js/collapse.js"></script>
+    <script type="text/javascript" src="/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker-standalone.css" />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-10">
+    <a class="navbar-brand" href="#">Flights</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="dropdown nav-item">
+                <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#">Airports
+                    <span class="caret"></span>
+                </a>
+                <ul id="nav-airports" class="dropdown-menu">
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container mt-5">
+    <div class=“row”>
+        <div class=“col”>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary" id="create">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary controls" id="edit" disabled>
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-danger controls" id="remove" disabled>
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="switchFlightType()" id="typeFlightButton"></button>
+            <table class="table table-bordered" id="flightsTable">
+                <thead>
+                <tr>
+                    <th>Flight Number</th>
+                    <th>Airplane</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Take Off</th>
+                    <th>Landing Time</th>
+                    <th>Time Left</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="flightModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a flight</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="flightForm">
+                    <div class="form-group">
+                        <label for="flightNr">Flight Number</label>
+                        <input id="flightNr" class="form-control" name="flightNr" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="airplaneNr">Airplane</label>
+                        <select class="form-control" id="airplaneNr" name="airplaneNr" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toAirport">To</label>
+                        <select class="form-control" id="toAirport" name="toAirport" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="takeOff">Take Off</label>
+                        <div class='input-group date' id='takeOff'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="landingTime">Landing Time</label>
+                        <div class='input-group date' id='landingTime'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                        </div>
+                    </div>
+                    <input type="submit" id="flightSubmit" style="display: none;">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="$('#flightSubmit').click();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
