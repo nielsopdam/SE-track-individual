@@ -23,7 +23,7 @@ public class AirplaneController {
         return airplane;
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Airplane updateAirplane(@RequestBody Airplane airplane) {
         this.airplaneRepository.save(airplane);
         return airplane;
