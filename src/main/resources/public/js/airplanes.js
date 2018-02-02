@@ -19,6 +19,10 @@ $(document).ready(function () {
                     return "In the air";
                 }
              }
+           },
+           {"render": function ( data, type, full, meta ) {
+                   return '<button type="button" class="btn btn-primary" onclick="gasPlane(\'' + full.airplaneNumber + '\')">Gas</button>';
+               }
            }
         ]
     });
@@ -71,6 +75,10 @@ $(document).ready(function () {
 
 function getAirports(successCallback, errorCallback) {
     return ajaxJsonCall('GET', '/api/airports', null, successCallback, errorCallback);
+}
+
+function gasPlane(successCallback, errorCallback) {
+    return ajaxJsonCall('POST', '/api/airplanes/1/gas', null, successCallback, errorCallback);
 }
 
 function handleCreateFormSubmit() {

@@ -23,6 +23,9 @@ $(document).ready(function () {
                               return data.landingTime.replace("T", " ");
               }
            },
+           {"data": "duration"},
+           {"data": "distance"},
+           {"data": "distanceLeft"},
            {"render": function ( data, type, full, meta ) {
                     console.log(full);
                     var buttonID = "flight_countdown_" + full.flightNumber;
@@ -142,6 +145,9 @@ function createFlight(flight, successCallback, errorCallback) {
     console.log("Creating flight..")
 
     flight.origin = {id: airport_id};
+    flight.fuel = 1;
+    flight.distance = 1;
+
     console.log(flight);
 
     ajaxJsonCall('POST', '/api/flights/create', flight, successCallback, errorCallback);
@@ -186,8 +192,7 @@ function getFormData() {
         destination : {
             id: $("#toAirport").val()
         },
-        liftOffTime : $("#takeOff").data("DateTimePicker").date().format("YYYY-MM-DDTHH:mm:ss"),
-        landingTime : $("#landingTime").data("DateTimePicker").date().format("YYYY-MM-DDTHH:mm:ss")
+        liftOffTime : $("#takeOff").data("DateTimePicker").date().format("YYYY-MM-DDTHH:mm:ss")
     };
 }
 
