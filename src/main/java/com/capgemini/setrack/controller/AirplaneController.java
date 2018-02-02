@@ -33,4 +33,11 @@ public class AirplaneController {
     public void deleteAirplane(@PathVariable long id) {
         this.airplaneRepository.delete(id);
     }
+
+    @RequestMapping(value = "/{id}/gas", method = RequestMethod.POST)
+    public void gasAirplane(@PathVariable long id) {
+        Airplane airplane = this.airplaneRepository.findOne(id);
+        airplane.setFuelLeft(airplane.getFuelCapacity());
+        this.airplaneRepository.save(airplane);
+    }
 }
