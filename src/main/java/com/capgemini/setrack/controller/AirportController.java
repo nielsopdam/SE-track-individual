@@ -49,6 +49,9 @@ public class AirportController {
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
+        this.flightRepository.updateFlightPlans(id);
+        System.out.println("Should have updated..");
+
         if(fromDate == null && toDate == null){
             return this.flightRepository.findDepartures(id);
         } else if (fromDate == null) {
@@ -66,6 +69,8 @@ public class AirportController {
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
+        this.flightRepository.updateFlightPlans(id);
+        System.out.println("Should have updated..");
         if(fromDate == null && toDate == null){
             return this.flightRepository.findArrivals(id);
         } else if (fromDate == null) {
