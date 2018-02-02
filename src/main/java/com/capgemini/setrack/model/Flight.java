@@ -10,7 +10,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table( name="Flight", uniqueConstraints= {
@@ -54,18 +53,35 @@ public class Flight {
     @Min(value=1L, message="A flight always takes at least 10 minutes!")
     private long duration;
 
-    private int fuel;
+    @NotNull(message="There should be an amount of fuel left!")
+    @Min(value=0, message="An amount of fuel has to be at least 0!")
+    private int fuelLeft;
+
+    @NotNull(message="There should be an amount of fuel!")
+    @Min(value=0, message="An amount of fuel has to be at least 0!")
+    private int startingFuel;
+
+    @NotNull(message="A flight has to have a distance!")
+    @Min(value=1, message="The distance of a flight has to be at least 1!")
+    private int distance;
+
+    @NotNull(message="There should be an amount of distance left!")
+    @Min(value=0, message="An amount of distance has to be at least 0!")
+    private int distanceLeft;
+
+    @NotNull(message="An airplane has to have a mileage!")
+    @Min(value=0, message="The mileage has to be at least 1!")
+    private int mileage;
 
     public Flight(){}
 
-    public Flight(String flightNumber, Airplane airplane, Airport origin, Airport destination, LocalDateTime liftOffTime, LocalDateTime landingTime) {
+    public Flight(String flightNumber, Airplane airplane, Airport origin, Airport destination, LocalDateTime liftOffTime) throws Exception {
         this.flightNumber = flightNumber;
         this.airplane = airplane;
         this.origin = origin;
         this.liftOffTime = liftOffTime;
-        this.landingTime = landingTime;
         this.destination = destination;
-        this.duration = ChronoUnit.MINUTES.between(liftOffTime, landingTime);
+        this.startingFuel = airplane.getFuelLeft();
     }
 
     public String getFlightNumber() {
@@ -104,16 +120,12 @@ public class Flight {
         return duration;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public int getStartingFuel() {
+        return startingFuel;
     }
 
-    public int getFuel() {
-        return fuel;
-    }
-
-    public void setFuel(int fuel) {
-        this.fuel = fuel;
+    public void setStartingFuel(int startingFuel) {
+        this.startingFuel = startingFuel;
     }
 
     public long getId() {
@@ -138,5 +150,41 @@ public class Flight {
 
     public void setLandingTime(LocalDateTime landingTime) {
         this.landingTime = landingTime;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public int getFuelLeft() {
+        return fuelLeft;
+    }
+
+    public void setFuelLeft(int fuelLeft) {
+        this.fuelLeft = fuelLeft;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getDistanceLeft() {
+        return distanceLeft;
+    }
+
+    public void setDistanceLeft(int distanceLeft) {
+        this.distanceLeft = distanceLeft;
+    }
+
+    public int getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(int mileage) {
+        this.mileage = mileage;
     }
 }

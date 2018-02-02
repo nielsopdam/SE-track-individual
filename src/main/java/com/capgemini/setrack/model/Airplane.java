@@ -30,24 +30,38 @@ public class Airplane {
     @JoinColumn(name="location_id", foreignKey=@ForeignKey(name = "FK_AIRPLANE_AIRPORT"))
     private Airport location;
 
+    @NotNull(message="An airplane has to have a speed!")
+    @Min(value=1, message="The speed has to be at least 1!")
+    private int speed;
+
+    @NotNull(message="An airplane has to have a mileage!")
+    @Min(value=0, message="The mileage has to be at least 1!")
+    private int mileage;
+
     public Airplane(){}
 
-    public Airplane(String airplaneNumber, int fuelCapacity, Airport location) {
+    public Airplane(String airplaneNumber, int fuelCapacity, Airport location, int speed, int mileage) {
         this.airplaneNumber = airplaneNumber;
         this.fuelCapacity = fuelCapacity;
         this.location = location;
+        this.speed = speed;
+        this.mileage = mileage;
     }
 
     public Airplane(String airplaneNumber, int fuelCapacity) {
         this.airplaneNumber = airplaneNumber;
         this.fuelCapacity = fuelCapacity;
         this.location = null;
+        this.speed = 100;
+        this.mileage = 10;
     }
 
     public Airplane(String airplaneNumber){
         this.airplaneNumber = airplaneNumber;
         this.fuelCapacity = 5000;
         this.location = null;
+        this.speed = 100;
+        this.mileage = 10;
     }
 
     public String getAirplaneNumber() {
@@ -88,5 +102,21 @@ public class Airplane {
 
     public void setLocation(Airport location) {
         this.location = location;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(int mileage) {
+        this.mileage = mileage;
     }
 }
