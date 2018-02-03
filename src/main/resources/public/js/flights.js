@@ -6,6 +6,10 @@ var edit = false;
 
 $(document).ready(function () {
 
+    var url = new URL(window.location.href);
+    airport_id = url.searchParams.get("airport");
+    flightType = url.searchParams.get("type");
+
     tableElement = $('#flightsTable');
     tableHelper =  new DataTableHelper(tableElement, {
         bLengthChange: false,
@@ -27,10 +31,12 @@ $(document).ready(function () {
            {"data": "distance"},
            {"data": "distanceLeft"},
            {"render": function ( data, type, full, meta ) {
-                    console.log(full);
+                    if(full.distanceLeft < full.distance){
+                        return airport_id == full.origin.id ? "Plane has left" : "Plane has arrived";
+                    }
+
                     var buttonID = "flight_countdown_" + full.flightNumber;
                     var script = '<script>$("#' + buttonID + '").countdown("' + full.liftOffTime.replace("T", " ") + '", function(event) { $(this).text( event.strftime("%D days %H:%M:%S"));});</script>';
-                    console.log(script);
                     return '<div id="' + buttonID + '"></div>' + script;
                 }
             }
@@ -38,32 +44,20 @@ $(document).ready(function () {
     });
 
     $('#takeOff').datetimepicker();
-    $('#landingTime').datetimepicker();
 
    $('#create').on('click', function(event) {
         $('#flightModal .modal-title').html('Creating a flight');
         $('#flightModal').modal('show');
 
-        ajaxJsonCall('GET', '/api/airports', null, function(airports) {
-            getAirports(function(result) {
-                result.forEach(function(airport) {
-                    $('#toAirport').append('<option value=' + airport.id + '>' + airport.city + '</option>');
-                });
-            }), null});
-
-        ajaxJsonCall('GET', '/api/airplanes', null, function(airplanes) {
-                    getAirplanes(function(result) {
-                        result.forEach(function(airplane) {
-                            $('#airplaneNr').append('<option value=' + airplane.id + '>' + airplane.airplaneNumber + '</option>');
-                        });
-                    }), null});
+        setModalDropdowns(null, false);
 
         console.log("opened create");
     });
     $('#edit').on('click', function(event) {
         edit = true;
         var flight = tableHelper.getSelectedRowData();
-        setFormData(flight);
+        setModalDropdowns(flight, true);
+
         $('#flightModal .modal-title').html('Editing ' + flight.flightNumber);
         $('#flightModal').modal('show');
     });
@@ -71,8 +65,8 @@ $(document).ready(function () {
     $('#remove').on('click', function(event) {
         var flight = tableHelper.getSelectedRowData();
         console.log("about to delete");
-        console.log(flight);
-        bootboxConfirm("Are you sure you want to delete this flight?", function(result){
+
+        bootboxConfirm("Are you sure you want to delete flight " + flight.flightNumber + "?", function(result){
             if (result == true){
                 removeFlight(flight, function() {
                     toastr.success('Removed "' + flight.flightNumber + '" from Flights!');
@@ -94,19 +88,45 @@ $(document).ready(function () {
         }
     });
 
-    var url = new URL(window.location.href);
-    airport_id = url.searchParams.get("airport");
-    flightType = url.searchParams.get("type");
 
     switchFlightType();
 });
 
+function setModalDropdowns(flight, fill){
+    $('#toAirport').html('');
+    $('#airplaneNr').html('');
+
+    ajaxJsonCall('GET', '/api/airports', null, function(airports) {
+        getAirports(function(result) {
+            result.forEach(function(airport) {
+                if(airport.id != airport_id){
+                    $('#toAirport').append('<option value=' + airport.id + '>' + airport.city + '</option>');
+                }
+            });
+        }), null});
+
+    ajaxJsonCall('GET', '/api/airplanes', null, function(airplanes) {
+                getAirplanes(function(result) {
+                    result.forEach(function(airplane) {
+                        $('#airplaneNr').append('<option value=' + airplane.id + '>' + airplane.airplaneNumber + '</option>');
+                    });
+                }), null});
+
+    if(fill){
+        setFormData(flight);
+    } else {
+        $('#airplaneNr').val([]);
+        $('#flightNr').val('');
+        $('#toAirport').val('');
+        $("#takeOff").data("DateTimePicker").date('');
+    }
+}
 function getAirports(successCallback, errorCallback) {
     return ajaxJsonCall('GET', '/api/airports', null, successCallback, errorCallback);
 }
 
 function getAirplanes(successCallback, errorCallback) {
-    return ajaxJsonCall('GET', '/api/airplanes', null, successCallback, errorCallback);
+    return ajaxJsonCall('GET', '/api/airports/' + airport_id + '/available_planes', null, successCallback, errorCallback);
 }
 
 function handleCreateFormSubmit() {
@@ -203,9 +223,8 @@ function formatDate(date){
 function setFormData(flight) {
     $('#airplaneNr option:eq(' + flight.airplane.id + ')').prop('selected', true)
     $('#flightNr').val(flight.flightNumber);
-    $('#toAirport option:eq(' + flight.destination.id + ')').prop('selected', true)
-    $('#takeOff').val(flight.liftOffTime);
-    $("#landingTime").val(flight.landingTime);
+    $('#toAirport option:eq(' + flight.destination.id + ')').prop('selected', true);
+    $("#takeOff").data("DateTimePicker").date(flight.liftOffTime);
 }
 
 function updateTable(id) {
@@ -216,7 +235,7 @@ function updateTable(id) {
         airport_id = url.searchParams.get("airport");
     }
 
-    url = '/api/airports/' + id + (flightType ? '/departures' : '/arrivals');
+    url = '/api/airports/' + airport_id + (flightType ? '/departures' : '/arrivals');
 
     ajaxJsonCall('GET', url, null, function(flights) {
       tableHelper.dataTable.clear();
