@@ -1,7 +1,9 @@
 package com.capgemini.setrack.controller;
 
+import com.capgemini.setrack.model.Airplane;
 import com.capgemini.setrack.model.Airport;
 import com.capgemini.setrack.model.Flight;
+import com.capgemini.setrack.repository.AirplaneRepository;
 import com.capgemini.setrack.repository.AirportRepository;
 import com.capgemini.setrack.repository.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class AirportController {
 
     @Autowired
     private FlightRepository flightRepository;
+
+    @Autowired
+    private AirplaneRepository airplaneRepository;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Iterable<Airport> getAllAirports() {
@@ -43,14 +48,18 @@ public class AirportController {
         this.airportRepository.delete(id);
     }
 
+    @RequestMapping(value = "/{id}/available_planes", method = RequestMethod.GET)
+    public Iterable<Airplane> getAvailableAirplanes(@PathVariable long id){
+        return this.airportRepository.getAvailableAirplanes(id);
+    }
+
     @RequestMapping(value = "/{id}/departures", method = RequestMethod.GET)
     public Iterable<Flight> getDepartures(
             @PathVariable long id,
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
-        this.flightRepository.updateFlightPlans(id);
-        System.out.println("Should have updated..");
+        this.updateFlightPlans(this.flightRepository.findDepartures(id));
 
         if(fromDate == null && toDate == null){
             return this.flightRepository.findDepartures(id);
@@ -69,8 +78,8 @@ public class AirportController {
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
-        this.flightRepository.updateFlightPlans(id);
-        System.out.println("Should have updated..");
+        this.updateFlightPlans(this.flightRepository.findArrivals(id));
+
         if(fromDate == null && toDate == null){
             return this.flightRepository.findArrivals(id);
         } else if (fromDate == null) {
@@ -82,4 +91,19 @@ public class AirportController {
         }
     }
 
+    private void updateFlightPlans(Iterable<Flight> flights){
+        for(Flight flight: flights){
+            Airplane airplane = flight.getAirplane();
+
+            flight.setTimeFlown();
+            if(flight.getTimeFlown() <= 0) continue;
+
+            long prevDistanceLeft = flight.getDistanceLeft();
+            flight.setDistanceLeft();
+            airplane.setFuelLeft(flight.getFuelLeft());
+            airplane.setLocation(flight, prevDistanceLeft);
+
+            this.airplaneRepository.save(airplane);
+        }
+    }
 }

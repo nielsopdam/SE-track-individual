@@ -39,6 +39,10 @@ public class Airport {
         this.numberRunways = numberRunways;
     }
 
+    public boolean freeRunway(int numberOccupied){
+        return numberOccupied < this.numberRunways;
+    }
+
     public String getCountry() {
         return country;
     }

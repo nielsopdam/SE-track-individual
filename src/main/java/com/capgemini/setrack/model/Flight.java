@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table( name="Flight", uniqueConstraints= {
@@ -73,6 +74,8 @@ public class Flight {
     @Min(value=0, message="The mileage has to be at least 1!")
     private int mileage;
 
+    private int timeFlown;
+
     public Flight(){}
 
     public Flight(String flightNumber, Airplane airplane, Airport origin, Airport destination, LocalDateTime liftOffTime) throws Exception {
@@ -82,6 +85,18 @@ public class Flight {
         this.liftOffTime = liftOffTime;
         this.destination = destination;
         this.startingFuel = airplane.getFuelLeft();
+    }
+
+    public void setTimeFlown(){
+        this.timeFlown = (int)ChronoUnit.SECONDS.between(this.liftOffTime, LocalDateTime.now());
+    }
+
+    public int getTimeFlown(){
+        return this.timeFlown;
+    }
+
+    public int setTimeFlown(int timeFlown){
+        return timeFlown;
     }
 
     public String getFlightNumber() {
@@ -157,7 +172,7 @@ public class Flight {
     }
 
     public int getFuelLeft() {
-        return fuelLeft;
+        return this.startingFuel - this.timeFlown * this.airplane.getSpeed() / this.airplane.getMileage();
     }
 
     public void setFuelLeft(int fuelLeft) {
@@ -178,6 +193,10 @@ public class Flight {
 
     public void setDistanceLeft(int distanceLeft) {
         this.distanceLeft = distanceLeft;
+    }
+
+    public void setDistanceLeft(){
+        this.distanceLeft = this.distance - this.timeFlown * this.airplane.getSpeed();
     }
 
     public int getMileage() {

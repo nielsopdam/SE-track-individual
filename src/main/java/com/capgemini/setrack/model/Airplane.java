@@ -104,6 +104,21 @@ public class Airplane {
         this.location = location;
     }
 
+    public void setLocation(Flight flight, long prevDistanceLeft){
+        int curDistanceLeft = flight.getDistanceLeft();
+
+        if(curDistanceLeft > 0 && prevDistanceLeft > 0 && prevDistanceLeft > curDistanceLeft){
+            System.out.println("Plane in the air");
+            this.location = null;
+        } else if (prevDistanceLeft > 0 && curDistanceLeft == 0){
+            this.location = flight.getDestination();
+            System.out.println("Plane at destination");
+        } else if (curDistanceLeft > prevDistanceLeft) {
+            this.location = flight.getOrigin();
+            System.out.println("Plane at origin");
+        }
+    }
+
     public int getSpeed() {
         return speed;
     }
