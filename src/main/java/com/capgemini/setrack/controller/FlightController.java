@@ -1,5 +1,6 @@
 package com.capgemini.setrack.controller;
 
+import com.capgemini.setrack.model.Airport;
 import com.capgemini.setrack.model.Flight;
 import com.capgemini.setrack.repository.AirplaneRepository;
 import com.capgemini.setrack.repository.AirportRepository;
@@ -30,9 +31,15 @@ public class FlightController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Flight addFlight(@RequestBody Flight flight) throws Exception {
+        Airport destination = airportRepository.findOne(flight.getDestination().getId());
+
+        if(!destination.freeRunway(airportRepository.getNumberOfAirplanes(destination.getId()))){
+            throw new Exception("There is no runway free at this destination!");
+        }
+
         flight.setAirplane(airplaneRepository.findOne(flight.getAirplane().getId()));
         flight.setOrigin(airportRepository.findOne(flight.getOrigin().getId()));
-        flight.setDestination(airportRepository.findOne(flight.getDestination().getId()));
+        flight.setDestination(destination);
 
         flight.setStartingFuel(flight.getAirplane().getFuelLeft());
         flight.setDistance(new APIDistanceCalculator().getDistanceBetweenCities(flight.getOrigin().getCity(),
@@ -47,7 +54,6 @@ public class FlightController {
         flight.setMileage(flight.getAirplane().getMileage());
         flight.setLandingTime(flight.getLiftOffTime().plusSeconds(flight.getDistance() / flight.getAirplane().getSpeed()));
         flight.setDuration(ChronoUnit.SECONDS.between(flight.getLiftOffTime(), flight.getLandingTime()));
-
 
         this.flightRepository.save(flight);
         return flight;
