@@ -4,12 +4,13 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table( name="Airport", uniqueConstraints= {
         @UniqueConstraint(name = "UK_AIRPORT_COUNTRY_CITY", columnNames = {"country", "city"})
 })
-public class Airport {
+public class Airport extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -30,6 +31,9 @@ public class Airport {
     @Min(value=1, message="An airport should have at least runway!")
     private int numberRunways;
 
+    @OneToMany(mappedBy="location")
+    private List<Airplane> airplanes;
+
     public Airport(){}
 
     public Airport(String country, String city, int budget, int numberRunways) {
@@ -39,8 +43,8 @@ public class Airport {
         this.numberRunways = numberRunways;
     }
 
-    public boolean freeRunway(int numberOccupied){
-        return numberOccupied < this.numberRunways;
+    public boolean runwayFree(){
+        return this.airplanes.size() < this.numberRunways;
     }
 
     public String getCountry() {

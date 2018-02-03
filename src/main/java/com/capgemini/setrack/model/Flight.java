@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit;
 @Table( name="Flight", uniqueConstraints= {
         @UniqueConstraint(name = "UK_FLIGHT_LIFTOFF", columnNames = {"airplane_id", "origin_id", "liftOffTime"})
 })
-public class Flight {
+public class Flight extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

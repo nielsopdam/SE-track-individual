@@ -31,9 +31,34 @@ public class FlightController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Flight addFlight(@RequestBody Flight flight) throws Exception {
+        flight.validate();
+
+        flight = this.setFlightValues(flight);
+
+        this.flightRepository.save(flight);
+        return flight;
+    }
+
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    public Flight updateFlight(@RequestBody Flight flight) throws Exception {
+        flight.validate();
+
+        flight = this.setFlightValues(flight);
+
+        this.flightRepository.save(flight);
+        return flight;
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public void deleteFlight(@PathVariable long id) {
+        this.flightRepository.delete(id);
+    }
+
+    private Flight setFlightValues(Flight flight) throws Exception {
+
         Airport destination = airportRepository.findOne(flight.getDestination().getId());
 
-        if(!destination.freeRunway(airportRepository.getNumberOfAirplanes(destination.getId()))){
+        if(!destination.runwayFree()){
             throw new Exception("There is no runway free at this destination!");
         }
 
@@ -55,18 +80,6 @@ public class FlightController {
         flight.setLandingTime(flight.getLiftOffTime().plusSeconds(flight.getDistance() / flight.getAirplane().getSpeed()));
         flight.setDuration(ChronoUnit.SECONDS.between(flight.getLiftOffTime(), flight.getLandingTime()));
 
-        this.flightRepository.save(flight);
         return flight;
-    }
-
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public Flight updateFlight(@RequestBody Flight flight) {
-        this.flightRepository.save(flight);
-        return flight;
-    }
-
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public void deleteFlight(@PathVariable long id) {
-        this.flightRepository.delete(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.capgemini.setrack.controller;
 
+import com.capgemini.setrack.exception.InvalidModelException;
 import com.capgemini.setrack.model.Airplane;
 import com.capgemini.setrack.model.Airport;
 import com.capgemini.setrack.model.Flight;
@@ -32,13 +33,17 @@ public class AirportController {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public Airport addAirport(@RequestBody Airport airport){
+    public Airport addAirport(@RequestBody Airport airport) throws InvalidModelException {
+        airport.validate();
+
         this.airportRepository.save(airport);
         return airport;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public Airport updateAirport(@RequestBody Airport airport) {
+    public Airport updateAirport(@RequestBody Airport airport) throws InvalidModelException {
+        airport.validate();
+
         this.airportRepository.save(airport);
         return airport;
     }

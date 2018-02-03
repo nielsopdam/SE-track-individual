@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 @Table( name="Airplane", uniqueConstraints= {
         @UniqueConstraint(name = "UK_AIRPLANE_FLIGHTNUMBER", columnNames = {"airplaneNumber"})
 })
-public class Airplane {
+public class Airplane extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

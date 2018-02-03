@@ -1,5 +1,6 @@
 package com.capgemini.setrack.controller;
 
+import com.capgemini.setrack.exception.InvalidModelException;
 import com.capgemini.setrack.model.Airplane;
 import com.capgemini.setrack.repository.AirplaneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,17 @@ public class AirplaneController {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public Airplane addAirplane(@RequestBody Airplane airplane){
+    public Airplane addAirplane(@RequestBody Airplane airplane) throws InvalidModelException {
+        airplane.validate();
+
         this.airplaneRepository.save(airplane);
         return airplane;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public Airplane updateAirplane(@RequestBody Airplane airplane) {
+    public Airplane updateAirplane(@RequestBody Airplane airplane) throws InvalidModelException {
+        airplane.validate();
+
         this.airplaneRepository.save(airplane);
         return airplane;
     }
@@ -38,6 +43,7 @@ public class AirplaneController {
     public void gasAirplane(@PathVariable long id) {
         Airplane airplane = this.airplaneRepository.findOne(id);
         airplane.setFuelLeft(airplane.getFuelCapacity());
+
         this.airplaneRepository.save(airplane);
     }
 }
