@@ -10,8 +10,10 @@ $(document).ready(function () {
         rowId: 'id',
         columns: [
            { "data": "airplaneNumber" },
+           { "data": "speed" },
            { "data": "fuelCapacity" },
            { "data": "fuelLeft"},
+           { "data": "mileage"},
            { "mData": function date(data, type, dataToSet) {
                 try{
                     return data.location.city;
@@ -21,9 +23,11 @@ $(document).ready(function () {
              }
            },
            {"render": function ( data, type, full, meta ) {
-                   return '<button type="button" class="btn btn-primary" onclick="gasPlane(\'' + full.airplaneNumber + '\')">Gas</button>';
+                if(full.location){
+                    return '<button type="button" class="btn btn-primary" onclick="gasPlane(\'' + full.id + '\')">Gas</button>';
                }
-           }
+               return " ";
+           }}
         ]
     });
 
@@ -31,16 +35,12 @@ $(document).ready(function () {
         $('#airplaneModal .modal-title').html('Creating an airplane');
         $('#airplaneModal').modal('show');
 
-        ajaxJsonCall('GET', '/api/airports', null, function(airports) {
-            getAirports(function(result) {
-                result.forEach(function(airport) {
-                    $('#location').append('<option value=' + airport.id + '>' + airport.city + '</option>');
-                });
-            }), null});
+        setAirports();
     });
     $('#edit').on('click', function(event) {
         edit = true;
         var airplane = tableHelper.getSelectedRowData();
+        setAirports();
         setFormData(airplane);
         $('#airplaneModal .modal-title').html('Editing ' + airplane.airplaneNumber);
         $('#airplaneModal').modal('show');
@@ -48,7 +48,7 @@ $(document).ready(function () {
 
     $('#remove').on('click', function(event) {
         var airplane = tableHelper.getSelectedRowData();
-        bootboxConfirm("Are you sure you want to delete this airplane?", function(result){
+        bootboxConfirm("Are you sure you want to delete airplane " + airplane.airplaneNumber + "?", function(result){
             if (result == true){
                 removeAirplane(airplane, function() {
                     toastr.success('Removed "' + airplane.airplaneNumber + '" from Airplanes!');
@@ -77,8 +77,10 @@ function getAirports(successCallback, errorCallback) {
     return ajaxJsonCall('GET', '/api/airports', null, successCallback, errorCallback);
 }
 
-function gasPlane(successCallback, errorCallback) {
-    return ajaxJsonCall('POST', '/api/airplanes/1/gas', null, successCallback, errorCallback);
+function gasPlane(id, successCallback, errorCallback) {
+    return ajaxJsonCall('POST', '/api/airplanes/' + id + '/gas', null, function(){
+        updateTable();
+    }, errorCallback);
 }
 
 function handleCreateFormSubmit() {
@@ -111,6 +113,15 @@ function handleError(error) {
     console.log(error);
 };
 
+function setAirports(successCallback, errorCallback){
+   ajaxJsonCall('GET', '/api/airports', null, function(airports) {
+        getAirports(function(result) {
+            result.forEach(function(airport) {
+                $('#location').append('<option value=' + airport.id + '>' + airport.city + '</option>');
+            });
+        }), null});
+}
+
 function createAirplane(airplane, successCallback, errorCallback) {
     console.log("Creating airplane..")
 
@@ -130,7 +141,9 @@ function editAirplane(data, successCallback, errorCallback) {
         airplaneNumber : data.airplaneNumber,
         fuelCapacity : data.fuelCapacity,
         fuelLeft : data.fuelLeft,
-        location: data.location
+        location: data.location,
+        speed: data.speed,
+        mileage: data.mileage
     };
 
     console.log(editedAirplane);
@@ -152,18 +165,22 @@ function getFormData() {
         location: {
             id: $("#location").val()
         },
-        fuelLeft: $("#fuelCapacity").val()
+        fuelLeft: $("#fuelCapacity").val(),
+        mileage: $("#mileage").val(),
+        speed: $("#speed").val()
     };
 }
 
 function setFormData(airplane) {
-    if(_.has(airplane, 'location')){
+    if(airplane.location){
         $('#location option:eq(' + airplane.location.id + ')').prop('selected', true);
     } else {
         $('#location option:eq(0)').prop('selected', true);
     }
     $('#fuelCapacity').val(airplane.fuelCapacity);
     $("#airplaneNr").val(airplane.airplaneNumber);
+    $('#speed').val(airplane.speed);
+    $('#mileage').val(airplane.mileage);
 }
 
 function updateTable(id) {

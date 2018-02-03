@@ -96,8 +96,10 @@
                 <thead>
                 <tr>
                     <th>Flight Number</th>
+                    <th>Speed</th>
                     <th>Fuel Capacity</th>
                     <th>Fuel Left</th>
+                    <th>Mileage</th>
                     <th>Location</th>
                     <th></th>
                 </tr>
@@ -122,13 +124,20 @@
                         <input id="airplaneNr" class="form-control" name="airplaneNr" type="text" required>
                     </div>
                     <div>
+                        <label for="speed">Fuel Capacity</label>
+                        <input id="speed" class="form-control" name="speed" type="number" required>
+                    </div>
+                    <div>
                         <label for="fuelCapacity">Fuel Capacity</label>
-                        <input id="fuelCapacity" class="form-control" name="fuelCapacity" type="text" required>
+                        <input id="fuelCapacity" class="form-control" name="fuelCapacity" type="number" required>
+                    </div>
+                    <div>
+                        <label for="mileage">Mileage</label>
+                        <input id="mileage" class="form-control" name="mileage" type="number" required>
                     </div>
                     <div class="form-group">
                         <label for="location">Location</label>
                         <select class="form-control" id="location" name="location" required>
-                            <option value="0">In the air</option>
                         </select>
                     </div>
                     <input type="submit" id="airplaneSubmit" style="display: none;">
