@@ -1,0 +1,21 @@
+{
+  "name": "nopdam",
+  "authors": [
+    "CORP\nopdam <niels.opdam@capgemini.com>"
+  ],
+  "description": "individual_assignment_airport",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47"
+  }
+}
