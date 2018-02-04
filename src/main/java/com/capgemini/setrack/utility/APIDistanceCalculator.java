@@ -1,6 +1,7 @@
 package com.capgemini.setrack.utility;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -9,6 +10,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Component
 public class APIDistanceCalculator implements DistanceCalculator {
 
     public int getDistanceBetweenCities(String origin, String destination) throws Exception {
