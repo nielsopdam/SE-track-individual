@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airplanes</title>
+    <title>Airports</title>
 
     <!-- JQuery -->
     <script
@@ -44,7 +44,7 @@
     <script src="/js/helpers/jquery.countdown.min.js"></script>
 
     <script src="/js/main.js"></script>
-    <script src="/js/airplanes.js"></script>
+    <script src="/js/airports.js"></script>
 
     <script type="text/javascript" src="/js/transition.js"></script>
     <script type="text/javascript" src="/js/collapse.js"></script>
@@ -55,7 +55,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-10">
-    <a class="navbar-brand" href="#">Airplanes</a>
+    <a class="navbar-brand" href="#">Airports</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -92,60 +92,47 @@
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
             </div>
-            <table class="table table-bordered" id="airplanesTable">
+            <table class="table table-bordered" id="airportsTable">
                 <thead>
                 <tr>
-                    <th>Flight Number</th>
-                    <th>Speed</th>
-                    <th>Fuel Capacity</th>
-                    <th>Fuel Left</th>
-                    <th>Mileage</th>
-                    <th>Location</th>
-                    <th></th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>Number of Runways</th>
                 </tr>
                 </thead>
             </table>
         </div>
     </div>
 </div>
-<div class="modal fade" id="airplaneModal" role="dialog">
+<div class="modal fade" id="airportModal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add an airplane</h5>
+                <h5 class="modal-title">Add an airport</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="airplaneForm">
+                <form id="airportForm">
                     <div class="form-group">
-                        <label for="airplaneNr">Airplane Number</label>
-                        <input id="airplaneNr" class="form-control" name="airplaneNr" type="text" required>
+                        <label for="country">Country</label>
+                        <input id="country" class="form-control" name="country" type="text" required>
                     </div>
                     <div>
-                        <label for="speed">Fuel Capacity</label>
-                        <input id="speed" class="form-control" name="speed" type="number" required>
+                        <label for="city">City</label>
+                        <input id="city" class="form-control" name="city" type="text" required>
                     </div>
                     <div>
-                        <label for="fuelCapacity">Fuel Capacity</label>
-                        <input id="fuelCapacity" class="form-control" name="fuelCapacity" type="number" required>
+                        <label for="numberRunways">Number of Runways</label>
+                        <input id="numberRunways" class="form-control" name="numberRunways" type="number" required>
                     </div>
-                    <div>
-                        <label for="mileage">Mileage</label>
-                        <input id="mileage" class="form-control" name="mileage" type="number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="location">Location</label>
-                        <select class="form-control" id="location" name="location" required>
-                        </select>
-                    </div>
-                    <input type="submit" id="airplaneSubmit" style="display: none;">
+                    <input type="submit" id="airportSubmit" style="display: none;">
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="$('#airplaneSubmit').click();">Submit</button>
+                <button type="button" class="btn btn-primary" onclick="$('#airportSubmit').click();">Submit</button>
             </div>
         </div>
     </div>

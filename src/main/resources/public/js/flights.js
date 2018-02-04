@@ -88,9 +88,18 @@ $(document).ready(function () {
         }
     });
 
-
     switchFlightType();
+
+    window.setInterval(function(){
+        console.log("Updating");
+        updateFlightPlans();
+        updateTable();
+    }, 3000);
 });
+
+function updateFlightPlans(successCallback, errorCallback){
+    return ajaxJsonCall('POST', '/api/airports/' + airport_id + '/update_flightplans', null, successCallback, errorCallback);
+}
 
 function setModalDropdowns(flight, fill){
     $('#toAirport').html('');
@@ -199,6 +208,7 @@ function removeFlight(flight, successCallback, errorCallback) {
 function switchFlightType(){
     flightType = 1 - flightType;
     console.log(flightType);
+    $('#flightTypeShowing').text(flightType ? 'Departues' : 'Arrivals');
     $("#typeFlightButton").html(flightType ? 'Arrivals' : 'Departures');
     updateTable(airport_id);
 }

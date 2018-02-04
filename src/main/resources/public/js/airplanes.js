@@ -86,9 +86,9 @@ function gasPlane(id, successCallback, errorCallback) {
 function handleCreateFormSubmit() {
     var data = getFormData();
 
-    console.log(data);
     createAirplane(data, function(result) {
-        toastr.success('Added "' + data.id + '" to Airplanes!');
+        console.log(result);
+        toastr.success('Added "' + data.airplaneNumber + '" to Airplanes!');
         $('#airplaneForm').get(0).reset();
         updateTable();
         $('#airplaneModal').modal('hide');

@@ -1,9 +1,12 @@
 $(document).ready(function () {
-    setAirports();
+    console.log("setting airports");
+    setAirportOptions();
 });
 
-function setAirports(){
+function setAirportOptions(){
     ajaxJsonCall('GET', '/api/airports/', null, function(airports) {
+        $("#nav-airports").empty();
+        $("#nav-airports").append('<li><a href="/airports.html">Manage airports</a></li>');
           airports.forEach(function(airport) {
                 console.log(airport);
                 $("#nav-airports").append('<li><a href="/flights.html?airport=' + airport.id + '&type=0">' + airport.city + '</a></li>');
