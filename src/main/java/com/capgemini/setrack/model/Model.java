@@ -8,8 +8,18 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
+/**
+ * A generic model class
+ *
+ */
 public class Model {
 
+    /**
+     * Checks the model for validation errors.
+     *
+     * @throws InvalidModelException in case of validation errors.
+     *
+     */
     public void validate() throws InvalidModelException {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();

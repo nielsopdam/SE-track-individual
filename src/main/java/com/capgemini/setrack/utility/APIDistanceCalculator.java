@@ -10,9 +10,21 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Component that calculates the distances between cities.
+ */
+
 @Component
 public class APIDistanceCalculator implements DistanceCalculator {
 
+    /**
+     * Retrieves the distance between two cities via api from nl.afstand.org.
+     *
+     * @param origin the name of the city to travel from
+     * @param destination the name of the city to travel to
+     *
+     * @return distance between the cities in km
+     */
     public int getDistanceBetweenCities(String origin, String destination) throws Exception {
         Client client = ClientBuilder.newClient();
 

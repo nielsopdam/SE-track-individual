@@ -1,5 +1,8 @@
 package com.capgemini.setrack.model.enums;
 
+/**
+ * A list of violation messages relating to specific key names in the database.
+ */
 public enum ConstraintViolations {
     AIRPORT_COUNTRY_CITY("This airport already exists!!"),
     AIRPLANE_AIRPLANENUMBER("An airplane with this number already exists!!"),

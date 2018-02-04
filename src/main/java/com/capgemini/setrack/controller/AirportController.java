@@ -92,6 +92,11 @@ public class AirportController {
         return this.airportRepository.findArrivals(id, fromDate, toDate);
     }
 
+    /**
+     * Ensures flight plans are up to date.
+     *
+     * @param id the id of the aiport to update the flightplans from
+     */
     @RequestMapping(value = "/{id}/update_flightplans", method = RequestMethod.POST)
     public void updateFlightPlans(
             @PathVariable long id) {
@@ -100,6 +105,12 @@ public class AirportController {
         this.updateFlightPlans(this.airportRepository.findDepartures(id, this.EARLIESTDATE, this.LATESTDATE));
     }
 
+    /**
+     * Ensures flight plans are up to date by updating distance left and fuel left for flights.
+     * Also makes sure an airplane actually switches locations when flying.
+     *
+     * @param flights the flights to update the flight plan for
+     */
     private void updateFlightPlans(Iterable<Flight> flights){
         for(Flight flight: flights){
             Airplane airplane = flight.getAirplane();
