@@ -1,14 +1,14 @@
 package com.capgemini.setrack.model.enums;
 
 public enum ConstraintViolations {
-    ROOM_ROOMTYPE("An invalid room type has been chosen!"),
-    ROOM_NUMBER("A room with this number already exists!"),
-    ROOM_NAME("A room with this name already exists!"),
-    BOOKING_ROOM("A booking has to have a room!"),
-    BOOKING_GUEST("A booking has to be made by a guest!"),
-    ROOMTYPE_TYPE("This room type already exists!"),
-    GUEST_ADDRESS("A guest has to have an address!"),
-    ADDRESS_POSTALCODE_HOUSENUMBER("There is already an address with this postal code and house number!");
+    AIRPORT_COUNTRY_CITY("This airport already exists!!"),
+    AIRPLANE_AIRPLANENUMBER("An airplane with this number already exists!!"),
+    AIRPLANE_AIRPORT("This is not an existing airport!"),
+    FLIGHT_LIFTOFF("This flight has already been added!"),
+    FLIGHT_AIRPLANE("This is not an existing airplane!"),
+    FLIGHT_STARTING_AIRPORT("The flight is not leaving from an existing airport!"),
+    FLIGHT_DESTINATION_AIRPORT("The flight is not going to an existing airport!");
+
 
     private String message;
 
