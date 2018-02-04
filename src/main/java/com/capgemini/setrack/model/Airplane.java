@@ -1,13 +1,17 @@
 package com.capgemini.setrack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
+@Where(clause="is_deleted=0")
 @Table( name="Airplane", uniqueConstraints= {
-        @UniqueConstraint(name = "UK_AIRPLANE_FLIGHTNUMBER", columnNames = {"airplaneNumber"})
+        @UniqueConstraint(name = "UK_AIRPLANE_AIRPLANENUMBER", columnNames = {"airplaneNumber"})
 })
 public class Airplane extends Model {
     @Id
@@ -38,6 +42,10 @@ public class Airplane extends Model {
     @Min(value=0, message="The mileage has to be at least 1!")
     private int mileage;
 
+    @JsonIgnore
+    @Column(name="is_deleted")
+    private boolean deleted;
+
     public Airplane(){}
 
     public Airplane(String airplaneNumber, int fuelCapacity, Airport location, int speed, int mileage) {
@@ -46,22 +54,7 @@ public class Airplane extends Model {
         this.location = location;
         this.speed = speed;
         this.mileage = mileage;
-    }
-
-    public Airplane(String airplaneNumber, int fuelCapacity) {
-        this.airplaneNumber = airplaneNumber;
-        this.fuelCapacity = fuelCapacity;
-        this.location = null;
-        this.speed = 100;
-        this.mileage = 10;
-    }
-
-    public Airplane(String airplaneNumber){
-        this.airplaneNumber = airplaneNumber;
-        this.fuelCapacity = 5000;
-        this.location = null;
-        this.speed = 100;
-        this.mileage = 10;
+        this.fuelLeft = 0;
     }
 
     public String getAirplaneNumber() {
@@ -108,14 +101,11 @@ public class Airplane extends Model {
         int curDistanceLeft = flight.getDistanceLeft();
 
         if(curDistanceLeft > 0 && prevDistanceLeft > 0 && prevDistanceLeft > curDistanceLeft){
-            System.out.println("Plane in the air");
             this.location = null;
         } else if (prevDistanceLeft > 0 && curDistanceLeft == 0){
             this.location = flight.getDestination();
-            System.out.println("Plane at destination");
         } else if (curDistanceLeft > prevDistanceLeft) {
             this.location = flight.getOrigin();
-            System.out.println("Plane at origin");
         }
     }
 

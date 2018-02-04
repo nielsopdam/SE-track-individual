@@ -2,8 +2,10 @@ package com.capgemini.setrack.model;
 
 import com.capgemini.setrack.converter.LocalDateTimeDeserializer;
 import com.capgemini.setrack.converter.LocalDateTimeSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
+@Where(clause="is_deleted=0")
 @Table( name="Flight", uniqueConstraints= {
         @UniqueConstraint(name = "UK_FLIGHT_LIFTOFF", columnNames = {"airplane_id", "origin_id", "liftOffTime"})
 })
@@ -45,13 +48,10 @@ public class Flight extends Model {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime liftOffTime;
 
-    @NotNull(message="A flight has to have a landing time!")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime landingTime;
 
-    @NotNull(message="A duration is required!")
-    @Min(value=1L, message="A flight always takes at least 10 minutes!")
     private long duration;
 
     @NotNull(message="There should be an amount of fuel left!")
@@ -62,12 +62,8 @@ public class Flight extends Model {
     @Min(value=0, message="An amount of fuel has to be at least 0!")
     private int startingFuel;
 
-    @NotNull(message="A flight has to have a distance!")
-    @Min(value=1, message="The distance of a flight has to be at least 1!")
     private int distance;
 
-    @NotNull(message="There should be an amount of distance left!")
-    @Min(value=0, message="An amount of distance has to be at least 0!")
     private int distanceLeft;
 
     @NotNull(message="An airplane has to have a mileage!")
@@ -75,6 +71,10 @@ public class Flight extends Model {
     private int mileage;
 
     private int timeFlown;
+
+    @JsonIgnore
+    @Column(name="is_deleted")
+    private boolean deleted;
 
     public Flight(){}
 
@@ -89,6 +89,10 @@ public class Flight extends Model {
 
     public void setTimeFlown(){
         this.timeFlown = (int)ChronoUnit.SECONDS.between(this.liftOffTime, LocalDateTime.now());
+    }
+
+    public boolean hasEnoughFuel(){
+        return this.startingFuel * this.airplane.getMileage() > this.distance;
     }
 
     public int getTimeFlown(){

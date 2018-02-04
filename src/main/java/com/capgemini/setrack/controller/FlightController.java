@@ -1,12 +1,15 @@
 package com.capgemini.setrack.controller;
 
+import com.capgemini.setrack.exception.InvalidModelException;
 import com.capgemini.setrack.model.Airport;
 import com.capgemini.setrack.model.Flight;
 import com.capgemini.setrack.repository.AirplaneRepository;
 import com.capgemini.setrack.repository.AirportRepository;
 import com.capgemini.setrack.repository.FlightRepository;
-import com.capgemini.setrack.utility.APIDistanceCalculator;
+import com.capgemini.setrack.utility.DistanceCalculator;
+import com.capgemini.setrack.utility.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoUnit;
@@ -24,6 +27,9 @@ public class FlightController {
     @Autowired
     private AirportRepository airportRepository;
 
+    @Autowired
+    private DistanceCalculator distanceCalculator;
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Iterable<Flight> getAllFlights() {
         return this.flightRepository.findAll();
@@ -31,22 +37,28 @@ public class FlightController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Flight addFlight(@RequestBody Flight flight) throws Exception {
+        flight = this.setFlightValues(flight);
         flight.validate();
 
-        flight = this.setFlightValues(flight);
-
-        this.flightRepository.save(flight);
-        return flight;
+        try{
+            this.flightRepository.save(flight);
+            return flight;
+        } catch(DataIntegrityViolationException e){
+            throw ValidationUtility.getInvalidModelException(e);
+        }
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Flight updateFlight(@RequestBody Flight flight) throws Exception {
+        flight = this.setFlightValues(flight);
         flight.validate();
 
-        flight = this.setFlightValues(flight);
-
-        this.flightRepository.save(flight);
-        return flight;
+        try{
+            this.flightRepository.save(flight);
+            return flight;
+        } catch(DataIntegrityViolationException e){
+            throw ValidationUtility.getInvalidModelException(e);
+        }
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
@@ -55,23 +67,23 @@ public class FlightController {
     }
 
     private Flight setFlightValues(Flight flight) throws Exception {
-
         Airport destination = airportRepository.findOne(flight.getDestination().getId());
 
         if(!destination.runwayFree()){
-            throw new Exception("There is no runway free at this destination!");
+            throw new InvalidModelException("There is no runway free at this destination!");
         }
 
         flight.setAirplane(airplaneRepository.findOne(flight.getAirplane().getId()));
+
         flight.setOrigin(airportRepository.findOne(flight.getOrigin().getId()));
         flight.setDestination(destination);
 
         flight.setStartingFuel(flight.getAirplane().getFuelLeft());
-        flight.setDistance(new APIDistanceCalculator().getDistanceBetweenCities(flight.getOrigin().getCity(),
+        flight.setDistance(this.distanceCalculator.getDistanceBetweenCities(flight.getOrigin().getCity(),
                 flight.getDestination().getCity()));
 
-        if(flight.getStartingFuel() * flight.getAirplane().getMileage() < flight.getDistance()){
-            throw new Exception("There is not enough fuel to make the trip!");
+        if(!flight.hasEnoughFuel()){
+            throw new InvalidModelException("There is not enough fuel to make the trip!");
         }
 
         flight.setDistanceLeft(flight.getDistance());

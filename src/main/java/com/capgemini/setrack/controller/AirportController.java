@@ -6,8 +6,9 @@ import com.capgemini.setrack.model.Airport;
 import com.capgemini.setrack.model.Flight;
 import com.capgemini.setrack.repository.AirplaneRepository;
 import com.capgemini.setrack.repository.AirportRepository;
-import com.capgemini.setrack.repository.FlightRepository;
+import com.capgemini.setrack.utility.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,11 @@ public class AirportController {
     private AirportRepository airportRepository;
 
     @Autowired
-    private FlightRepository flightRepository;
-
-    @Autowired
     private AirplaneRepository airplaneRepository;
+
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final LocalDateTime EARLIESTDATE = LocalDateTime.parse("1900-01-01 00:00", FORMATTER);
+    private final LocalDateTime LATESTDATE = LocalDateTime.parse("9999-12-31 00:00", FORMATTER);
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Iterable<Airport> getAllAirports() {
@@ -36,16 +38,24 @@ public class AirportController {
     public Airport addAirport(@RequestBody Airport airport) throws InvalidModelException {
         airport.validate();
 
-        this.airportRepository.save(airport);
-        return airport;
+        try{
+            this.airportRepository.save(airport);
+            return airport;
+        } catch(DataIntegrityViolationException e){
+            throw ValidationUtility.getInvalidModelException(e);
+        }
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Airport updateAirport(@RequestBody Airport airport) throws InvalidModelException {
         airport.validate();
 
-        this.airportRepository.save(airport);
-        return airport;
+        try{
+            this.airportRepository.save(airport);
+            return airport;
+        } catch(DataIntegrityViolationException e){
+            throw ValidationUtility.getInvalidModelException(e);
+        }
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
@@ -64,17 +74,10 @@ public class AirportController {
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
-        this.updateFlightPlans(this.flightRepository.findDepartures(id));
+        fromDate = fromDate == null ? this.EARLIESTDATE : fromDate;
+        toDate = toDate == null ? this.LATESTDATE : toDate;
 
-        if(fromDate == null && toDate == null){
-            return this.flightRepository.findDepartures(id);
-        } else if (fromDate == null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime dateTime = LocalDateTime.parse("1900-01-01 00:00", formatter);
-            return this.flightRepository.findDepartures(id, dateTime, toDate);
-        } else {
-            return this.flightRepository.findDepartures(id, fromDate);
-        }
+        return this.airportRepository.findDepartures(id, fromDate, toDate);
     }
 
     @RequestMapping(value = "/{id}/arrivals", method = RequestMethod.GET)
@@ -83,17 +86,18 @@ public class AirportController {
             @RequestParam(name="from", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fromDate,
             @RequestParam(name="to", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime toDate) {
 
-        this.updateFlightPlans(this.flightRepository.findArrivals(id));
+        fromDate = fromDate == null ? this.EARLIESTDATE : fromDate;
+        toDate = toDate == null ? this.LATESTDATE : toDate;
 
-        if(fromDate == null && toDate == null){
-            return this.flightRepository.findArrivals(id);
-        } else if (fromDate == null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime dateTime = LocalDateTime.parse("1900-01-01 00:00", formatter);
-            return this.flightRepository.findArrivals(id, dateTime, toDate);
-        } else {
-            return this.flightRepository.findArrivals(id, fromDate);
-        }
+        return this.airportRepository.findArrivals(id, fromDate, toDate);
+    }
+
+    @RequestMapping(value = "/{id}/update_flightplans", method = RequestMethod.POST)
+    public void updateFlightPlans(
+            @PathVariable long id) {
+
+        this.updateFlightPlans(this.airportRepository.findArrivals(id, this.EARLIESTDATE, this.LATESTDATE));
+        this.updateFlightPlans(this.airportRepository.findDepartures(id, this.EARLIESTDATE, this.LATESTDATE));
     }
 
     private void updateFlightPlans(Iterable<Flight> flights){
